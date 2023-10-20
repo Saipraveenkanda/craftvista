@@ -18,14 +18,20 @@ import {
   Add as AddIcon,
   EmojiEmotions,
   PersonAdd,
-  // VideoCameraBack,
   Image,
   DateRange,
 } from "@mui/icons-material";
+import VideoCallIcon from "@mui/icons-material/VideoCall";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/styles";
 import { useDispatch, useSelector } from "react-redux";
-import { setPostText, setImageUrl } from "../../Store/postSlice";
+import {
+  setPostText,
+  setImageUrl,
+  setImageUrlLink,
+  setVideoUrl,
+} from "../../Store/postSlice";
+// import { setImageData } from "../../Store/uploadSlice";
 import axios from "axios";
 
 const StyledModal = styled(Modal)({
@@ -41,25 +47,42 @@ const UserBox = styled(Box)({
   marginBottom: "20px",
 });
 
-// const VisuallyHiddenInput = styled("input")({
-//   clip: "rect(0 0 0 0)",
-//   clipPath: "inset(50%)",
-//   height: 1,
-//   overflow: "hidden",
-//   position: "absolute",
-//   bottom: 0,
-//   left: 0,
-//   whiteSpace: "nowrap",
-//   width: 1,
-// });
-
 const Add = (props) => {
+  const [postImage, setPostImage] = useState({ myFile: "" });
+  const url = "http://localhost:3001/upload";
+
+  const createPost = async (newImage) => {
+    try {
+      await axios.post(url, newImage);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   createPost(postImage);
+  //   console.log("Uploaded");
+  // };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertToBase64(file);
+    dispatch(setImageUrl(base64));
+  };
+
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertToBase64(file);
+    dispatch(setVideoUrl(base64));
+  };
+
   const postObject = useSelector((state) => state.post);
+  console.log(postObject);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [snack, setSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  console.log(postObject);
 
   const action = (
     <>
@@ -75,7 +98,6 @@ const Add = (props) => {
       postObject
     );
     const data = await response.data;
-    console.log(response);
     if (response.statusText === "Created") {
       setSnackMessage(data);
       setOpen(false);
@@ -128,7 +150,7 @@ const Add = (props) => {
             fullWidth
             onChange={(e) => dispatch(setPostText(e.target.value))}
           />
-          <Stack direction={"row"} gap={2} mt={2} mb={3}>
+          <Stack direction={"row"} gap={2} mt={2} mb={3} alignItems="center">
             <EmojiEmotions color="primary" />
 
             <Input
@@ -137,15 +159,33 @@ const Add = (props) => {
               id="raised-button-file"
               multiple
               type="file"
-              onChange={(e) =>
-                dispatch(setImageUrl(URL.createObjectURL(e.target.files[0])))
-              }
+              onChange={handleFileUpload}
             />
             <label htmlFor="raised-button-file">
               <Image color="secondary" />
             </label>
             {/* <VideoCameraBack color="success" /> */}
             <PersonAdd color="error" />
+            <Input
+              accept="video/*"
+              style={{ display: "none" }}
+              id="video-input"
+              multiple
+              type="file"
+              onChange={handleVideoUpload}
+            />
+            <label htmlFor="video-input">
+              <VideoCallIcon color="primary" />
+            </label>
+            <TextField
+              type="text"
+              variant="outlined"
+              placeholder="Paste Image URL"
+              size="small"
+              onChange={(e) => {
+                dispatch(setImageUrlLink(e.target.value));
+              }}
+            />
           </Stack>
           <ButtonGroup
             variant="contained"
@@ -172,3 +212,16 @@ const Add = (props) => {
 };
 
 export default Add;
+
+function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsername, setPassword } from "../../Store/loginSlice";
 import {
@@ -23,6 +23,13 @@ const Login = () => {
   const userDetails = useSelector((state) => state.login);
   const { username, password } = userDetails;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = Cookies.get("jwtToken");
+    if (token !== undefined) {
+      navigate("/");
+    }
+  });
 
   const onHandleSubmit = async (e) => {
     e.preventDefault();
@@ -67,11 +74,13 @@ const Login = () => {
           alignItems="center"
         >
           <Grid item align="center">
-            <StoreIcon fontSize="large" sx={{ height: 100, width: 100 }} />
-            <Typography variant="h2" color="#0F1E33" fontFamily={"serif"}>
+            <StoreIcon sx={{ height: 120, width: 120, color: "#fff" }} />
+            <Typography variant="h2" color="#ffffff" fontFamily={"serif"}>
               Craft Vista
             </Typography>
-            <Typography variant="h6">Handcrafted Horizons</Typography>
+            <Typography variant="h6" color="#ffffff">
+              Handcrafted Horizons
+            </Typography>
           </Grid>
           <Grid item>
             <form onSubmit={onHandleSubmit}>

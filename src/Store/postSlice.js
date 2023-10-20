@@ -7,16 +7,17 @@ const newDate = new Date();
 const dateObject = `${newDate.getFullYear()}/${
   newDate.getMonth() + 1
 }/${newDate.getDate()}`;
-console.log(dateObject);
 
 export const postSlice = createSlice({
   name: "post",
   initialState: {
     id: nanoid(),
     postText: "",
-    imageUrl: "",
+    imageUrl: null,
     username: username,
     date: dateObject,
+    imageUrlLink: "",
+    videoUrl: null,
   },
   reducers: {
     setPostText: (state, action) => {
@@ -25,8 +26,15 @@ export const postSlice = createSlice({
     setImageUrl: (state, action) => {
       state.imageUrl = action.payload;
     },
+    setImageUrlLink: (state, action) => {
+      state.imageUrlLink = action.payload;
+    },
+    setVideoUrl: (state, action) => {
+      state.videoUrl = action.payload;
+    },
   },
 });
 
-export const { setPostText, setImageUrl, setPostUserName } = postSlice.actions;
+export const { setPostText, setImageUrl, setImageUrlLink, setVideoUrl } =
+  postSlice.actions;
 export default postSlice.reducer;

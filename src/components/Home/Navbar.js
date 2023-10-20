@@ -3,6 +3,7 @@ import {
   Avatar,
   Badge,
   Box,
+  Button,
   InputBase,
   Menu,
   MenuItem,
@@ -23,9 +24,12 @@ const StyledToolbar = styled(Toolbar)({
 
 const Search = styled("div")({
   backgroundColor: "#ffffff",
-  padding: "0 10px",
+  padding: "0 0 0 10px",
   borderRadius: 5,
   width: "40%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
 });
 
 const Icons = styled(Box)({
@@ -60,7 +64,10 @@ const NavBar = (props) => {
         </Typography>
         <StoreIcon sx={{ display: { xs: "block", sm: "none" } }} />
         <Search>
-          <InputBase placeholder="Search..." color="text.primary" />
+          <InputBase placeholder="Search..." color="text.primary" fullWidth />
+          <Button variant="contained" color="warning">
+            Search
+          </Button>
         </Search>
         <Icons sx={{ display: { xs: "none", sm: "flex" } }}>
           <Badge badgeContent={4} color="error">
@@ -97,7 +104,9 @@ const NavBar = (props) => {
           horizontal: "right",
         }}
       >
-        <MenuItem>Profile</MenuItem>
+        <MenuItem component="a" href="/user/settings">
+          Profile
+        </MenuItem>
         <MenuItem>My account</MenuItem>
         <MenuItem onClick={onHandleLogout}>Logout</MenuItem>
       </Menu>
